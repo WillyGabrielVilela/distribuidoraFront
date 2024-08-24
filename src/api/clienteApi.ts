@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/clientes';
+// const API_URL = 'http://localhost:8080/api/clientes';
+const API_URL = 'http://localhost:5000/clientes';
 
 export interface Cliente {
   id: number;
