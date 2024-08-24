@@ -1,0 +1,26 @@
+{
+    "clientes": [
+      {
+        "id": 1,
+        "nome": "Empresa A",
+        "endereco": "Rua 1, 123",
+        "telefone": "(11) 1234-5678",
+        "email": "contato@empresaA.com"
+      },
+      {
+        "id": 2,
+        "nome": "Empresa B",
+        "endereco": "Rua 2, 456",
+        "telefone": "(11) 2345-6789",
+        "email": "contato@empresaB.com"
+      },
+      {
+        "id": 3,
+        "nome": "Empresa C",
+        "endereco": "Rua 3, 789",
+        "telefone": "(11) 3456-7890",
+        "email": "contato@empresaC.com"
+      }
+    ]
+  }
+  
