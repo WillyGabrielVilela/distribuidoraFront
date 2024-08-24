@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 interface Cliente {
   id: number;
@@ -12,9 +13,8 @@ const Clientes: React.FC = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/clientes')
-      .then(response => response.json())
-      .then(data => setClientes(data))
+    axios.get('http://localhost:5000/clientes')
+      .then(response => setClientes(response.data))
       .catch(error => console.error('Erro ao buscar clientes:', error));
   }, []);
 
