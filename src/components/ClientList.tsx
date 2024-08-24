@@ -9,11 +9,13 @@ interface Cliente {
   email: string;
 }
 
+const API_URL = 'http://localhost:5000/clientes'
+
 const Clientes: React.FC = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/clientes')
+    axios.get(API_URL)
       .then(response => setClientes(response.data))
       .catch(error => console.error('Erro ao buscar clientes:', error));
   }, []);
