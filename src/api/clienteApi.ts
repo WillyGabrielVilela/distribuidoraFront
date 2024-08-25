@@ -1,22 +1,35 @@
+// clienteApi.ts
 import axios from 'axios';
 
-// const API_URL = 'http://localhost:8080/api/clientes';
 const API_URL = 'http://localhost:5000/clientes';
 
 export interface Cliente {
-  id: number;
+  id: string; // Alterado de number para string
   nome: string;
-  // Outros campos...
+  endereco: string;
+  telefone: string;
+  email: string;
 }
 
+// Pegar todos os clientes
 export const getAllClientes = async (): Promise<Cliente[]> => {
   const response = await axios.get<Cliente[]>(API_URL);
   return response.data;
 };
 
-export const createCliente = async (cliente: Cliente): Promise<Cliente> => {
+// Criar um novo cliente
+export const createCliente = async (cliente: Omit<Cliente, 'id'>): Promise<Cliente> => {
   const response = await axios.post<Cliente>(API_URL, cliente);
   return response.data;
 };
 
-// Outros métodos (update, delete, etc.)
+// Editar um cliente existente
+export const editCliente = async (id: string, cliente: Cliente): Promise<Cliente> => {
+  const response = await axios.put<Cliente>(`${API_URL}/${id}`, cliente);
+  return response.data;
+};
+
+// Excluir um cliente existente
+export const deleteCliente = async (id: string): Promise<void> => {
+  await axios.delete(`${API_URL}/${id}`);
+};

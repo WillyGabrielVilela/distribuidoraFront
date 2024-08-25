@@ -1,26 +1,25 @@
 {
-    "clientes": [
-      {
-        "id": 1,
-        "nome": "Empresa A",
-        "endereco": "Rua 1, 123",
-        "telefone": "(11) 1234-5678",
-        "email": "contato@empresaA.com"
-      },
-      {
-        "id": 2,
-        "nome": "Empresa B",
-        "endereco": "Rua 2, 456",
-        "telefone": "(11) 2345-6789",
-        "email": "contato@empresaB.com"
-      },
-      {
-        "id": 3,
-        "nome": "Empresa C",
-        "endereco": "Rua 3, 789",
-        "telefone": "(11) 3456-7890",
-        "email": "contato@empresaC.com"
-      }
-    ]
-  }
-  
+  "clientes": [
+    {
+      "nome": "João Silva",
+      "endereco": "Rua das Flores, 123",
+      "telefone": "1234-5678",
+      "email": "joao.silva@example.com",
+      "id": "1"
+    },
+    {
+      "id": "2",
+      "nome": "Maria Oliveira",
+      "endereco": "Avenida Central, 456",
+      "telefone": "9876-5432",
+      "email": "maria.oliveira@example.com"
+    },
+    {
+      "id": "3",
+      "nome": "Carlos Santos",
+      "endereco": "Praça da Liberdade, 789",
+      "telefone": "1111-2222",
+      "email": "carlos.santos@example.com"
+    }
+  ]
+}
