@@ -27,6 +27,57 @@
       "telefone": "39420434",
       "email": "w@w.com",
       "id": "e916"
+    },
+    {
+      "nome": "Julia ",
+      "endereco": "R. VISC. DE JEQUITINHONHA",
+      "telefone": "(81) 988986216",
+      "email": "pedroanjospds@gmail.com",
+      "id": "75b0"
+    },
+    {
+      "id": "62fc",
+      "nome": "Teste",
+      "endereco": "a",
+      "telefone": "e",
+      "email": "ui@gmail.com"
+    }
+  ],
+  "fornecedores": [
+    {
+      "nome": "Fornecedor A",
+      "endereco": "Rua A, 100",
+      "telefone": "1111-1111",
+      "email": "contato@fornecedora.com",
+      "id": "1"
+    },
+    {
+      "nome": "Fornecedor B",
+      "endereco": "Avenida B, 200",
+      "telefone": "2222-2222",
+      "email": "vendas@fornecedorb.com",
+      "id": "2"
+    },
+    {
+      "nome": "Fornecedor C",
+      "endereco": "Praça C, 300",
+      "telefone": "3333-3333",
+      "email": "suporte@fornecedorc.com",
+      "id": "3"
+    },
+    {
+      "nome": "Fornecedor D",
+      "endereco": "Rua D, 400",
+      "telefone": "4444-4444",
+      "email": "info@fornecedord.com",
+      "id": "4"
+    },
+    {
+      "nome": "Alvaro Figueroa",
+      "endereco": "R. VISC. DE JEQUITINHONHA",
+      "telefone": "(81) 90000000",
+      "email": "pedroanjospds@gmail.com",
+      "id": "5ec5"
     }
   ]
 }

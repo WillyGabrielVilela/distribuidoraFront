@@ -1,7 +1,7 @@
 // clienteApi.ts
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/clientes';
+const API_URL = 'http://localhost:3000/clientes';
 
 export interface Cliente {
   id: string; // Alterado de number para string
