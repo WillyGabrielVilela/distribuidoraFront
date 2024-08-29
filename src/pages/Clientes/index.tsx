@@ -2,16 +2,40 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllClientes, createCliente, editCliente, deleteCliente, Cliente } from '../../api/clienteApi';
 import { PageContainer, MainContent, ContentHeader, FormContainer, Table } from './styles';
-import SidebarComponent from '../../components/Sidebar';   
+import SidebarComponent from '../../components/Sidebar';
 
 const Clientes: React.FC = () => {
   const navigate = useNavigate();
   const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [novoCliente, setNovoCliente] = useState<Omit<Cliente, 'id'>>({
-    nome: '',
-    endereco: '',
+  const [novoCliente, setNovoCliente] = useState<Omit<Cliente, 'codCliente'>>({
+    nomeCliente: '',
+    enderecoComercial: '',
     telefone: '',
-    email: ''
+    email: '',
+    cgcEnt: '',
+    ramoAtividade: '',
+    complementoComercial: '',
+    bairroComercial: '',
+    cidadeComercial: '',
+    ufComercial: '',
+    cepComercial: '',
+    enderecoEntrega: '',
+    complementoEntrega: '',
+    bairroEntrega: '',
+    cidadeEntrega: '',
+    ufEntrega: '',
+    cepEntrega: '',
+    enderecoCobranca: '',
+    complementoCobranca: '',
+    bairroCobranca: '',
+    cidadeCobranca: '',
+    ufCobranca: '',
+    cepCobranca: '',
+    planoPagamento: {
+      codPlanoPag: '',
+      descricao: ''
+    },
+    dtCadastro: ''
   });
   const [editando, setEditando] = useState<Cliente | null>(null);
 
@@ -32,12 +56,41 @@ const Clientes: React.FC = () => {
     e.preventDefault();
     try {
       if (editando) {
-        await editCliente(editando.id, { ...novoCliente, id: editando.id });
+        await editCliente(editando.codCliente, { ...novoCliente, codCliente: editando.codCliente });
         setEditando(null);
       } else {
         await createCliente(novoCliente);
       }
-      setNovoCliente({ nome: '', endereco: '', telefone: '', email: '' });
+      setNovoCliente({
+        nomeCliente: '',
+        enderecoComercial: '',
+        telefone: '',
+        email: '',
+        cgcEnt: '',
+        ramoAtividade: '',
+        complementoComercial: '',
+        bairroComercial: '',
+        cidadeComercial: '',
+        ufComercial: '',
+        cepComercial: '',
+        enderecoEntrega: '',
+        complementoEntrega: '',
+        bairroEntrega: '',
+        cidadeEntrega: '',
+        ufEntrega: '',
+        cepEntrega: '',
+        enderecoCobranca: '',
+        complementoCobranca: '',
+        bairroCobranca: '',
+        cidadeCobranca: '',
+        ufCobranca: '',
+        cepCobranca: '',
+        planoPagamento: {
+          codPlanoPag: '',
+          descricao: ''
+        },
+        dtCadastro: ''
+      });
       carregarClientes();
     } catch (error) {
       console.error('Erro ao salvar cliente:', error);
@@ -46,17 +99,38 @@ const Clientes: React.FC = () => {
 
   const handleEdit = (cliente: Cliente) => {
     setNovoCliente({
-      nome: cliente.nome,
-      endereco: cliente.endereco,
+      nomeCliente: cliente.nomeCliente,
+      enderecoComercial: cliente.enderecoComercial,
       telefone: cliente.telefone,
-      email: cliente.email
+      email: cliente.email,
+      cgcEnt: cliente.cgcEnt,
+      ramoAtividade: cliente.ramoAtividade,
+      complementoComercial: cliente.complementoComercial,
+      bairroComercial: cliente.bairroComercial,
+      cidadeComercial: cliente.cidadeComercial,
+      ufComercial: cliente.ufComercial,
+      cepComercial: cliente.cepComercial,
+      enderecoEntrega: cliente.enderecoEntrega,
+      complementoEntrega: cliente.complementoEntrega,
+      bairroEntrega: cliente.bairroEntrega,
+      cidadeEntrega: cliente.cidadeEntrega,
+      ufEntrega: cliente.ufEntrega,
+      cepEntrega: cliente.cepEntrega,
+      enderecoCobranca: cliente.enderecoCobranca,
+      complementoCobranca: cliente.complementoCobranca,
+      bairroCobranca: cliente.bairroCobranca,
+      cidadeCobranca: cliente.cidadeCobranca,
+      ufCobranca: cliente.ufCobranca,
+      cepCobranca: cliente.cepCobranca,
+      planoPagamento: cliente.planoPagamento,
+      dtCadastro: cliente.dtCadastro
     });
     setEditando(cliente);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (codCliente: string) => {
     try {
-      await deleteCliente(id);
+      await deleteCliente(codCliente);
       carregarClientes();
     } catch (error) {
       console.error('Erro ao excluir cliente:', error);
@@ -85,18 +159,18 @@ const Clientes: React.FC = () => {
             <label>Nome:</label>
             <input
               type="text"
-              name="nome"
-              value={novoCliente.nome}
+              name="nomeCliente"
+              value={novoCliente.nomeCliente}
               onChange={handleChange}
               required
             />
           </div>
           <div>
-            <label>Endereço:</label>
+            <label>Endereço Comercial:</label>
             <input
               type="text"
-              name="endereco"
-              value={novoCliente.endereco}
+              name="enderecoComercial"
+              value={novoCliente.enderecoComercial}
               onChange={handleChange}
               required
             />
@@ -130,7 +204,7 @@ const Clientes: React.FC = () => {
           <thead>
             <tr>
               <th>Nome</th>
-              <th>Endereço</th>
+              <th>Endereço Comercial</th>
               <th>Telefone</th>
               <th>Email</th>
               <th>Ações</th>
@@ -138,14 +212,14 @@ const Clientes: React.FC = () => {
           </thead>
           <tbody>
             {clientes.map((cliente) => (
-              <tr key={cliente.id}>
-                <td>{cliente.nome}</td>
-                <td>{cliente.endereco}</td>
+              <tr key={cliente.codCliente}>
+                <td>{cliente.nomeCliente}</td>
+                <td>{cliente.enderecoComercial}</td>
                 <td>{cliente.telefone}</td>
                 <td>{cliente.email}</td>
                 <td>
                   <button className="edit-btn" onClick={() => handleEdit(cliente)}>Editar</button>
-                  <button className="delete-btn" onClick={() => handleDelete(cliente.id)}>Excluir</button>
+                  <button className="delete-btn" onClick={() => handleDelete(cliente.codCliente)}>Excluir</button>
                 </td>
               </tr>
             ))}
