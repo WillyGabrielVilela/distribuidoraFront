@@ -1,7 +1,7 @@
 // FornecedoresApi.ts
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/fornecedores';
+const API_URL = 'http://localhost:8080/api/fornecedores';
 
 export interface Fornecedores {
   id: string; // Alterado de number para string
