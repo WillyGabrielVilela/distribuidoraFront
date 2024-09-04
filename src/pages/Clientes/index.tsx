@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllClientes, createCliente, editCliente, deleteCliente, Cliente } from '../../api/clienteApi';
-import { PageContainer, MainContent, ContentHeader, FormContainer, Table } from './styles';
+import { PageContainer, MainContent, ContentHeader, Table, Modal, ModalContent, Overlay, ButtonGroup } from './styles';
 import SidebarComponent from '../../components/Sidebar';
 
 const Clientes: React.FC = () => {
@@ -38,6 +38,7 @@ const Clientes: React.FC = () => {
     dtCadastro: ''
   });
   const [editando, setEditando] = useState<Cliente | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     carregarClientes();
@@ -91,6 +92,7 @@ const Clientes: React.FC = () => {
         },
         dtCadastro: ''
       });
+      setShowModal(false);
       carregarClientes();
     } catch (error) {
       console.error('Erro ao salvar cliente:', error);
@@ -126,6 +128,7 @@ const Clientes: React.FC = () => {
       dtCadastro: cliente.dtCadastro
     });
     setEditando(cliente);
+    setShowModal(true);
   };
 
   const handleDelete = async (codCliente: string) => {
@@ -144,6 +147,11 @@ const Clientes: React.FC = () => {
     });
   };
 
+  const handleAddCliente = () => {
+    setEditando(null);
+    setShowModal(true);
+  };
+
   return (
     <PageContainer>
       <SidebarComponent />
@@ -151,54 +159,9 @@ const Clientes: React.FC = () => {
       <MainContent>
         <ContentHeader>
           <h1>Clientes</h1>
+          <button onClick={handleAddCliente}>Adicionar Cliente</button>
           <button onClick={() => navigate('/')}>Voltar para Home</button>
         </ContentHeader>
-
-        <FormContainer onSubmit={handleSubmit}>
-          <div>
-            <label>Nome:</label>
-            <input
-              type="text"
-              name="nomeCliente"
-              value={novoCliente.nomeCliente}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Endereço Comercial:</label>
-            <input
-              type="text"
-              name="enderecoComercial"
-              value={novoCliente.enderecoComercial}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Telefone:</label>
-            <input
-              type="text"
-              name="telefone"
-              value={novoCliente.telefone}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Email:</label>
-            <input
-              type="email"
-              name="email"
-              value={novoCliente.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button type="submit">
-            {editando ? 'Atualizar Cliente' : 'Adicionar Cliente'}
-          </button>
-        </FormContainer>
 
         <Table>
           <thead>
@@ -225,6 +188,62 @@ const Clientes: React.FC = () => {
             ))}
           </tbody>
         </Table>
+
+        {showModal && (
+          <Overlay>
+            <Modal>
+              <ModalContent>
+                <h2>{editando ? 'Editar Cliente' : 'Adicionar Cliente'}</h2>
+                <form onSubmit={handleSubmit}>
+                  <div>
+                    <label>Nome:</label>
+                    <input
+                      type="text"
+                      name="nomeCliente"
+                      value={novoCliente.nomeCliente}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Endereço Comercial:</label>
+                    <input
+                      type="text"
+                      name="enderecoComercial"
+                      value={novoCliente.enderecoComercial}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Telefone:</label>
+                    <input
+                      type="text"
+                      name="telefone"
+                      value={novoCliente.telefone}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Email:</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={novoCliente.email}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <ButtonGroup>
+                    <button type="submit">{editando ? 'Atualizar' : 'Adicionar'}</button>
+                    <button type="button" onClick={() => setShowModal(false)}>Cancelar</button>
+                  </ButtonGroup>
+                </form>
+              </ModalContent>
+            </Modal>
+          </Overlay>
+        )}
       </MainContent>
     </PageContainer>
   );
