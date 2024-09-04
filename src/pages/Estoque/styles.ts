@@ -1,46 +1,8 @@
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 
 export const PageContainer = styled.div`
   display: flex;
   height: 100vh;
-`;
-
-export const Sidebar = styled.aside`
-  width: 250px;
-  background: linear-gradient(135deg, #0044cc, #00aaff);
-  color: white;
-  padding: 20px;
-
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-
-  ul li {
-    margin: 15px 0;
-  }
-`;
-
-export const StyledLink = styled(Link)`
-  color: white;
-  text-decoration: none;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  border-radius: 8px;
-  transition: background-color 0.3s, border-radius 0.3s;
-  margin: 8px;
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-  }
-
-  svg {
-    margin-right: 10px;
-  }
 `;
 
 export const MainContent = styled.main`
@@ -166,6 +128,91 @@ export const Table = styled.table`
 
     &:hover {
       background-color: #cc0000;
+    }
+  }
+`;
+
+export const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+export const Modal = styled.div`
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+`;
+
+export const ModalContent = styled.div`
+  h2 {
+    margin-top: 0;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+
+    div {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+
+      label {
+        width: 150px;
+        margin-right: 10px;
+        font-weight: bold;
+      }
+
+      input {
+        width: 300px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+    }
+  }
+`;
+
+export const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:first-child {
+      background-color: #0044cc;
+      color: white;
+
+      &:hover {
+        background-color: #003399;
+      }
+    }
+
+    &:last-child {
+      background-color: #f44336;
+      color: white;
+
+      &:hover {
+        background-color: #c62828;
+      }
     }
   }
 `;
