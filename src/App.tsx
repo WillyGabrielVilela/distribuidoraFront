@@ -5,6 +5,7 @@ import Clientes from './pages/Clientes';
 import Estoque from './pages/Estoque';
 import Fornecedores from './pages/Fornecedores';
 import NotFound from './pages/NotFound';
+import Produtos from './pages/Produtos';
 
 const App: React.FC = () => {
   return (
@@ -13,6 +14,7 @@ const App: React.FC = () => {
         <Route path="/" element={<Home />} />
         <Route path="/clientes" element={<Clientes />} />
         <Route path="/estoque" element={<Estoque />} />
+        <Route path="/produtos" element={<Produtos />} />
         {<Route path="/fornecedores" element={<Fornecedores />} />}
         <Route path="*" element={<NotFound />} /> {/* Rota para 404 */}
       </Routes>
