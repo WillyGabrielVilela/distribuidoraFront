@@ -77,49 +77,6 @@ export const ContentHeader = styled.div`
   }
 `;
 
-export const FormContainer = styled.form`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-bottom: 20px;
-
-  div {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-
-    label {
-      width: 200px;
-      margin-right: 10px;
-      font-weight: bold;
-    }
-
-    input {
-      width: 300px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-  }
-
-  button {
-    font-size: 16px;
-    padding: 10px 20px;
-    width: 420px;
-    border: none;
-    border-radius: 8px;
-    background-color: #0044cc;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
-
-    &:hover {
-      background-color: #003399;
-    }
-  }
-`;
-
 export const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -153,19 +110,96 @@ export const Table = styled.table`
   }
 
   .edit-btn {
-    background-color: #ffcc00;
-    margin-right: 10px; /* Adiciona o espaçamento entre os botões */
+    background-color: #ffa500;
+    margin-right: 8px;
 
     &:hover {
-      background-color: #e6b800;
+      background-color: #e59400;
     }
   }
 
   .delete-btn {
-    background-color: #ff4444;
+    background-color: #ff4c4c;
 
     &:hover {
-      background-color: #cc0000;
+      background-color: #e04444;
     }
+  }
+`;
+
+export const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const Modal = styled.div`
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 500px;
+`;
+
+export const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  h2 {
+    margin-top: 0;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+
+    div {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 12px;
+
+      label {
+        font-weight: bold;
+        margin-bottom: 4px;
+      }
+
+      input, select {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+      }
+    }
+
+    button {
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    background-color: #0044cc;
+    color: #fff;
+
+    &:hover {
+      background-color: #003399;
+    }
+
+    &:last-child {
+      margin-top: 10px;
+      background-color: #ff4444;
+      color: #fff;
+
+      &:hover {
+        background-color: #cc0000;
+      }
+    }
+  }
   }
 `;

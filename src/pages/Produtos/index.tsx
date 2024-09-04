@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllProdutos, createProduto, editProduto, deleteProduto, Produto } from '../../api/produtoApi';
-import { PageContainer, MainContent, ContentHeader, FormContainer, Table } from './styles';
+import { PageContainer, MainContent, ContentHeader, Table, Modal, ModalContent, Overlay } from './styles';
 import SidebarComponent from '../../components/Sidebar';
 
 const Produtos: React.FC = () => {
@@ -17,6 +17,7 @@ const Produtos: React.FC = () => {
     codigoBarras: ''
   });
   const [editando, setEditando] = useState<Produto | null>(null);
+  const [modalAberto, setModalAberto] = useState<boolean>(false);
 
   useEffect(() => {
     carregarProdutos();
@@ -50,6 +51,7 @@ const Produtos: React.FC = () => {
         codigoBarras: ''
       });
       carregarProdutos();
+      setModalAberto(false);  // Fecha o modal após a ação
     } catch (error) {
       console.error('Erro ao salvar produto:', error);
     }
@@ -66,6 +68,7 @@ const Produtos: React.FC = () => {
       codigoBarras: produto.codigoBarras || ''
     });
     setEditando(produto);
+    setModalAberto(true);  // Abre o modal ao editar
   };
 
   const handleDelete = async (codProduto: number) => {
@@ -94,85 +97,9 @@ const Produtos: React.FC = () => {
       <MainContent>
         <ContentHeader>
           <h1>Produtos</h1>
+          <button onClick={() => setModalAberto(true)}>Adicionar Produto</button>
           <button onClick={() => navigate('/')}>Voltar para Home</button>
         </ContentHeader>
-
-        <FormContainer onSubmit={handleSubmit}>
-          <div>
-            <label>Nome:</label>
-            <input
-              type="text"
-              name="nomeProduto"
-              value={novoProduto.nomeProduto}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Fornecedor:</label>
-            <input
-              type="number"
-              name="codFornecedor"
-              value={novoProduto.codFornecedor || ''}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Categoria:</label>
-            <input
-              type="number"
-              name="codCategoria"
-              value={novoProduto.codCategoria || ''}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Volume:</label>
-            <input
-              type="number"
-              name="volume"
-              value={novoProduto.volume || ''}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Embalagem:</label>
-            <input
-              type="number"
-              name="codEmbalagem"
-              value={novoProduto.codEmbalagem || ''}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Código da Fábrica:</label>
-            <input
-              type="text"
-              name="codFabrica"
-              value={novoProduto.codFabrica}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Código de Barras:</label>
-            <input
-              type="text"
-              name="codigoBarras"
-              value={novoProduto.codigoBarras}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <button type="submit">
-            {editando ? 'Atualizar Produto' : 'Adicionar Produto'}
-          </button>
-        </FormContainer>
 
         <Table>
           <thead>
@@ -198,6 +125,93 @@ const Produtos: React.FC = () => {
           </tbody>
         </Table>
       </MainContent>
+
+      {modalAberto && (
+        <Overlay>
+          <Modal>
+            <ModalContent>
+              <h2>{editando ? 'Editar Produto' : 'Adicionar Produto'}</h2>
+              <form onSubmit={handleSubmit}>
+                <div>
+                  <label>Nome:</label>
+                  <input
+                    type="text"
+                    name="nomeProduto"
+                    value={novoProduto.nomeProduto}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Fornecedor:</label>
+                  <input
+                    type="number"
+                    name="codFornecedor"
+                    value={novoProduto.codFornecedor || ''}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Categoria:</label>
+                  <input
+                    type="number"
+                    name="codCategoria"
+                    value={novoProduto.codCategoria || ''}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Volume:</label>
+                  <input
+                    type="number"
+                    name="volume"
+                    value={novoProduto.volume || ''}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Embalagem:</label>
+                  <input
+                    type="number"
+                    name="codEmbalagem"
+                    value={novoProduto.codEmbalagem || ''}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Código da Fábrica:</label>
+                  <input
+                    type="text"
+                    name="codFabrica"
+                    value={novoProduto.codFabrica}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Código de Barras:</label>
+                  <input
+                    type="text"
+                    name="codigoBarras"
+                    value={novoProduto.codigoBarras}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <button type="submit">
+                  {editando ? 'Atualizar Produto' : 'Adicionar Produto'}
+                </button>
+                <button type="button" onClick={() => setModalAberto(false)}>Cancelar</button>
+              </form>
+            </ModalContent>
+          </Modal>
+        </Overlay>
+      )}
     </PageContainer>
   );
 };
