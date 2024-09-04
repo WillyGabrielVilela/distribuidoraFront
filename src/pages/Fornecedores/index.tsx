@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllFornecedores, createFornecedores, editFornecedores, deleteFornecedores, Fornecedores } from '../../api/fornecedoresApi';
-import { PageContainer, MainContent, ContentHeader, FormContainer, Table } from './styles';
-import SidebarComponent from '../../components/Sidebar';   
+import { PageContainer, MainContent, ContentHeader, Table, Overlay, Modal, ModalContent, ButtonGroup } from './styles';
+import SidebarComponent from '../../components/Sidebar';
 
 const Fornecedor: React.FC = () => {
   const navigate = useNavigate();
@@ -14,6 +14,7 @@ const Fornecedor: React.FC = () => {
     email: ''
   });
   const [editando, setEditando] = useState<Fornecedores | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     carregarFornecedores();
@@ -38,6 +39,7 @@ const Fornecedor: React.FC = () => {
         await createFornecedores(novoFornecedores);
       }
       setNovoFornecedores({ nome: '', endereco: '', telefone: '', email: '' });
+      setIsModalOpen(false);
       carregarFornecedores();
     } catch (error) {
       console.error('Erro ao salvar fornecedor:', error);
@@ -52,6 +54,7 @@ const Fornecedor: React.FC = () => {
       email: fornecedor.email
     });
     setEditando(fornecedor);
+    setIsModalOpen(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -77,54 +80,12 @@ const Fornecedor: React.FC = () => {
       <MainContent>
         <ContentHeader>
           <h1>Fornecedores</h1>
+        <button onClick={() => { setNovoFornecedores({ nome: '', endereco: '', telefone: '', email: '' }); setIsModalOpen(true); }}>
+          Adicionar Fornecedor
+        </button>
           <button onClick={() => navigate('/')}>Voltar para Home</button>
         </ContentHeader>
 
-        <FormContainer onSubmit={handleSubmit}>
-          <div>
-            <label>Nome:</label>
-            <input
-              type="text"
-              name="nome"
-              value={novoFornecedores.nome}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Endereço:</label>
-            <input
-              type="text"
-              name="endereco"
-              value={novoFornecedores.endereco}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Telefone:</label>
-            <input
-              type="text"
-              name="telefone"
-              value={novoFornecedores.telefone}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Email:</label>
-            <input
-              type="email"
-              name="email"
-              value={novoFornecedores.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button type="submit">
-            {editando ? 'Atualizar Fornecedor' : 'Adicionar Fornecedor'}
-          </button>
-        </FormContainer>
 
         <Table>
           <thead>
@@ -137,20 +98,78 @@ const Fornecedor: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {fornecedores.map((fornecedores) => (
-              <tr key={fornecedores.id}>
-                <td>{fornecedores.nome}</td>
-                <td>{fornecedores.endereco}</td>
-                <td>{fornecedores.telefone}</td>
-                <td>{fornecedores.email}</td>
+            {fornecedores.map((fornecedor) => (
+              <tr key={fornecedor.id}>
+                <td>{fornecedor.nome}</td>
+                <td>{fornecedor.endereco}</td>
+                <td>{fornecedor.telefone}</td>
+                <td>{fornecedor.email}</td>
                 <td>
-                  <button className="edit-btn" onClick={() => handleEdit(fornecedores)}>Editar</button>
-                  <button className="delete-btn" onClick={() => handleDelete(fornecedores.id)}>Excluir</button>
+                  <button className="edit-btn" onClick={() => handleEdit(fornecedor)}>Editar</button>
+                  <button className="delete-btn" onClick={() => handleDelete(fornecedor.id)}>Excluir</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </Table>
+
+        {isModalOpen && (
+          <Overlay>
+            <Modal>
+              <ModalContent>
+                <h2>{editando ? 'Editar Fornecedor' : 'Adicionar Fornecedor'}</h2>
+                <form onSubmit={handleSubmit}>
+                  <div>
+                    <label>Nome:</label>
+                    <input
+                      type="text"
+                      name="nome"
+                      value={novoFornecedores.nome}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Endereço:</label>
+                    <input
+                      type="text"
+                      name="endereco"
+                      value={novoFornecedores.endereco}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Telefone:</label>
+                    <input
+                      type="text"
+                      name="telefone"
+                      value={novoFornecedores.telefone}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Email:</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={novoFornecedores.email}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <ButtonGroup>
+                    <button type="submit">
+                      {editando ? 'Atualizar Fornecedor' : 'Adicionar Fornecedor'}
+                    </button>
+                    <button type="button" className="cancel" onClick={() => setIsModalOpen(false)}>Cancelar</button>
+                  </ButtonGroup>
+                </form>
+              </ModalContent>
+            </Modal>
+          </Overlay>
+        )}
       </MainContent>
     </PageContainer>
   );
