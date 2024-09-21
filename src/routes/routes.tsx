@@ -5,6 +5,7 @@ import Estoque from '../pages/Estoque';
 import Fornecedores from '../pages/Fornecedores';
 import NotFound from '../pages/NotFound';
 import Produtos from '../pages/Produtos';
+import Pedidos from '../pages/Pedidos';
 
 const routes: RouteObject[] = [
   { path: '/', element: <Home /> },
@@ -12,6 +13,7 @@ const routes: RouteObject[] = [
   { path: '/estoque', element: <Estoque /> },
   { path: '/produtos', element: <Produtos /> },
   { path: '/fornecedores', element: <Fornecedores /> },
+  { path: '/pedidos', element: <Pedidos /> },
   { path: '*', element: <NotFound /> }, // Rota para 404
 ];
 

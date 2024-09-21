@@ -1,9 +1,10 @@
 import React from 'react';
-import { Sidebar, StyledLink } from '../styles/Sidebar'; // Ajuste o caminho se necessário
+import { Sidebar, StyledLink } from '../styles/Sidebar'; 
 import suppliersLogo from '../assets/suppliersdist.svg';
 import stockLogo from '../assets/stockdist.svg';
 import userLogo from '../assets/userdist.svg';
-import productsLogo from '../assets/productdist.svg'; // Novo ícone para Produtos
+import productsLogo from '../assets/productdist.svg'; 
+import orderLogo from '../assets/orderdist.svg'; 
 
 const SidebarComponent: React.FC = () => {
   return (
@@ -32,6 +33,12 @@ const SidebarComponent: React.FC = () => {
             <StyledLink to="/produtos">
               <img src={productsLogo} alt="Produtos Imagem" />
               Produtos
+            </StyledLink>
+          </li>
+          <li>
+            <StyledLink to="/pedidos">
+              <img src={orderLogo} alt="Pedido Imagem" />
+              Pedidos
             </StyledLink>
           </li>
         </ul>

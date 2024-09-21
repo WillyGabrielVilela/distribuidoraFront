@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/clientes/listarClientes';
+const API_URL = 'http://localhost:8080/api/clientes';
 
 export interface Cliente {
   codCliente: string;
@@ -34,20 +34,20 @@ export interface Cliente {
   dtCadastro: string;
 }
 
-// Pegar todos os clientes
+// Listar todos os clientes
 export const getAllClientes = async (): Promise<Cliente[]> => {
-  const response = await axios.get<Cliente[]>(API_URL);
+  const response = await axios.get<Cliente[]>(`${API_URL}/listarClientes`);
   return response.data;
 };
 
 // Criar um novo cliente
 export const createCliente = async (cliente: Omit<Cliente, 'codCliente'>): Promise<Cliente> => {
-  const response = await axios.post<Cliente>(API_URL, cliente);
+  const response = await axios.post<Cliente>(`${API_URL}/criarCliente`, cliente);
   return response.data;
 };
 
 // Editar um cliente existente
-export const editCliente = async (codCliente: string, cliente: Cliente): Promise<Cliente> => {
+export const editCliente = async (codCliente: string, cliente: Omit<Cliente, 'codCliente'>): Promise<Cliente> => {
   const response = await axios.put<Cliente>(`${API_URL}/${codCliente}`, cliente);
   return response.data;
 };
