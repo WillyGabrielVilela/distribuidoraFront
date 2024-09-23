@@ -7,11 +7,31 @@ import SidebarComponent from '../../components/Sidebar';
 const Fornecedor: React.FC = () => {
   const navigate = useNavigate();
   const [fornecedores, setFornecedores] = useState<Fornecedores[]>([]);
-  const [novoFornecedores, setNovoFornecedores] = useState<Omit<Fornecedores, 'id'>>({
-    nome: '',
-    endereco: '',
+  const [novoFornecedores, setNovoFornecedores] = useState<Omit<Fornecedores, 'dtCadastro'>>({
+    nomeFornecedor: '',
+    cnpj: '',
+    enderecoComercial: '',
+    complementoComercial: '',
+    bairroComercial: '',
+    cidadeComercial: '',
+    ufComercial: '',
+    cepComercial: '',
+    enderecoEntrega: '',
+    complementoEntrega: '',
+    bairroEntrega: '',
+    cidadeEntrega: '',
+    ufEntrega: '',
+    cepEntrega: '',
+    enderecoCobranca: '',
+    complementoCobranca: '',
+    bairroCobranca: '',
+    cidadeCobranca: '',
+    ufCobranca: '',
+    cepCobranca: '',
     telefone: '',
-    email: ''
+    email: '',
+    planoPagamentoId: null,
+    clienteId: null
   });
   const [editando, setEditando] = useState<Fornecedores | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -25,7 +45,7 @@ const Fornecedor: React.FC = () => {
       const fornecedores = await getAllFornecedores();
       setFornecedores(fornecedores);
     } catch (error) {
-      console.error('Erro ao carregar Fornecedores:', error);
+      console.error('Erro ao carregar fornecedores:', error);
     }
   };
 
@@ -33,12 +53,12 @@ const Fornecedor: React.FC = () => {
     e.preventDefault();
     try {
       if (editando) {
-        await editFornecedores(editando.id, { ...novoFornecedores, id: editando.id });
+        await editFornecedores(editando.cnpj, novoFornecedores);
         setEditando(null);
       } else {
         await createFornecedores(novoFornecedores);
       }
-      setNovoFornecedores({ nome: '', endereco: '', telefone: '', email: '' });
+      resetForm();
       setIsModalOpen(false);
       carregarFornecedores();
     } catch (error) {
@@ -46,12 +66,61 @@ const Fornecedor: React.FC = () => {
     }
   };
 
+  const resetForm = () => {
+    setNovoFornecedores({
+      nomeFornecedor: '',
+      cnpj: '',
+      enderecoComercial: '',
+      complementoComercial: '',
+      bairroComercial: '',
+      cidadeComercial: '',
+      ufComercial: '',
+      cepComercial: '',
+      enderecoEntrega: '',
+      complementoEntrega: '',
+      bairroEntrega: '',
+      cidadeEntrega: '',
+      ufEntrega: '',
+      cepEntrega: '',
+      enderecoCobranca: '',
+      complementoCobranca: '',
+      bairroCobranca: '',
+      cidadeCobranca: '',
+      ufCobranca: '',
+      cepCobranca: '',
+      telefone: '',
+      email: '',
+      planoPagamentoId: null,
+      clienteId: null
+    });
+  };
+
   const handleEdit = (fornecedor: Fornecedores) => {
     setNovoFornecedores({
-      nome: fornecedor.nome,
-      endereco: fornecedor.endereco,
+      nomeFornecedor: fornecedor.nomeFornecedor,
+      cnpj: fornecedor.cnpj,
+      enderecoComercial: fornecedor.enderecoComercial,
+      complementoComercial: fornecedor.complementoComercial,
+      bairroComercial: fornecedor.bairroComercial,
+      cidadeComercial: fornecedor.cidadeComercial,
+      ufComercial: fornecedor.ufComercial,
+      cepComercial: fornecedor.cepComercial,
+      enderecoEntrega: fornecedor.enderecoEntrega,
+      complementoEntrega: fornecedor.complementoEntrega,
+      bairroEntrega: fornecedor.bairroEntrega,
+      cidadeEntrega: fornecedor.cidadeEntrega,
+      ufEntrega: fornecedor.ufEntrega,
+      cepEntrega: fornecedor.cepEntrega,
+      enderecoCobranca: fornecedor.enderecoCobranca,
+      complementoCobranca: fornecedor.complementoCobranca,
+      bairroCobranca: fornecedor.bairroCobranca,
+      cidadeCobranca: fornecedor.cidadeCobranca,
+      ufCobranca: fornecedor.ufCobranca,
+      cepCobranca: fornecedor.cepCobranca,
       telefone: fornecedor.telefone,
-      email: fornecedor.email
+      email: fornecedor.email,
+      planoPagamentoId: fornecedor.planoPagamentoId,
+      clienteId: fornecedor.clienteId
     });
     setEditando(fornecedor);
     setIsModalOpen(true);
@@ -80,18 +149,21 @@ const Fornecedor: React.FC = () => {
       <MainContent>
         <ContentHeader>
           <h1>Fornecedores</h1>
-        <button onClick={() => { setNovoFornecedores({ nome: '', endereco: '', telefone: '', email: '' }); setIsModalOpen(true); }}>
-          Adicionar Fornecedor
-        </button>
+          <button onClick={() => { 
+            resetForm();
+            setIsModalOpen(true); 
+          }}>
+            Adicionar Fornecedor
+          </button>
           <button onClick={() => navigate('/')}>Voltar para Home</button>
         </ContentHeader>
-
 
         <Table>
           <thead>
             <tr>
               <th>Nome</th>
-              <th>Endereço</th>
+              <th>CNPJ</th>
+              <th>Endereço Comercial</th>
               <th>Telefone</th>
               <th>Email</th>
               <th>Ações</th>
@@ -99,14 +171,15 @@ const Fornecedor: React.FC = () => {
           </thead>
           <tbody>
             {fornecedores.map((fornecedor) => (
-              <tr key={fornecedor.id}>
-                <td>{fornecedor.nome}</td>
-                <td>{fornecedor.endereco}</td>
+              <tr key={fornecedor.cnpj}>
+                <td>{fornecedor.nomeFornecedor}</td>
+                <td>{fornecedor.cnpj}</td>
+                <td>{fornecedor.enderecoComercial}</td>
                 <td>{fornecedor.telefone}</td>
                 <td>{fornecedor.email}</td>
                 <td>
                   <button className="edit-btn" onClick={() => handleEdit(fornecedor)}>Editar</button>
-                  <button className="delete-btn" onClick={() => handleDelete(fornecedor.id)}>Excluir</button>
+                  <button className="delete-btn" onClick={() => handleDelete(fornecedor.cnpj)}>Excluir</button>
                 </td>
               </tr>
             ))}
@@ -123,18 +196,28 @@ const Fornecedor: React.FC = () => {
                     <label>Nome:</label>
                     <input
                       type="text"
-                      name="nome"
-                      value={novoFornecedores.nome}
+                      name="nomeFornecedor"
+                      value={novoFornecedores.nomeFornecedor}
                       onChange={handleChange}
                       required
                     />
                   </div>
                   <div>
-                    <label>Endereço:</label>
+                    <label>CNPJ:</label>
                     <input
                       type="text"
-                      name="endereco"
-                      value={novoFornecedores.endereco}
+                      name="cnpj"
+                      value={novoFornecedores.cnpj}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Endereço Comercial:</label>
+                    <input
+                      type="text"
+                      name="enderecoComercial"
+                      value={novoFornecedores.enderecoComercial}
                       onChange={handleChange}
                       required
                     />
