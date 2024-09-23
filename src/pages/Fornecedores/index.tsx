@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllFornecedores, createFornecedores, editFornecedores, deleteFornecedores, Fornecedores } from '../../api/fornecedoresApi';
-import { PageContainer, MainContent, ContentHeader, Table, Overlay, Modal, ModalContent, ButtonGroup } from './styles';
+import {
+  getAllFornecedores,
+  createFornecedores,
+  editFornecedores,
+  deleteFornecedores,
+  Fornecedores,
+} from '../../api/fornecedoresApi';
+import {
+  PageContainer,
+  MainContent,
+  ContentHeader,
+  Table,
+  Overlay,
+  Modal,
+  ModalContent,
+  ButtonGroup,
+} from './styles';
 import SidebarComponent from '../../components/Sidebar';
 
 const Fornecedor: React.FC = () => {
   const navigate = useNavigate();
   const [fornecedores, setFornecedores] = useState<Fornecedores[]>([]);
-  const [novoFornecedores, setNovoFornecedores] = useState<Omit<Fornecedores, 'dtCadastro'>>({
+  const [novoFornecedores, setNovoFornecedores] = useState<Omit<Fornecedores, 'dtCadastro' | 'CodFornecedor'>>({
     nomeFornecedor: '',
     cnpj: '',
     enderecoComercial: '',
@@ -31,7 +46,7 @@ const Fornecedor: React.FC = () => {
     telefone: '',
     email: '',
     planoPagamentoId: null,
-    clienteId: null
+    clienteId: null,
   });
   const [editando, setEditando] = useState<Fornecedores | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -91,7 +106,7 @@ const Fornecedor: React.FC = () => {
       telefone: '',
       email: '',
       planoPagamentoId: null,
-      clienteId: null
+      clienteId: null,
     });
   };
 
@@ -120,7 +135,7 @@ const Fornecedor: React.FC = () => {
       telefone: fornecedor.telefone,
       email: fornecedor.email,
       planoPagamentoId: fornecedor.planoPagamentoId,
-      clienteId: fornecedor.clienteId
+      clienteId: fornecedor.clienteId,
     });
     setEditando(fornecedor);
     setIsModalOpen(true);
@@ -138,7 +153,7 @@ const Fornecedor: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNovoFornecedores({
       ...novoFornecedores,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -149,10 +164,12 @@ const Fornecedor: React.FC = () => {
       <MainContent>
         <ContentHeader>
           <h1>Fornecedores</h1>
-          <button onClick={() => { 
-            resetForm();
-            setIsModalOpen(true); 
-          }}>
+          <button
+            onClick={() => {
+              resetForm();
+              setIsModalOpen(true);
+            }}
+          >
             Adicionar Fornecedor
           </button>
           <button onClick={() => navigate('/')}>Voltar para Home</button>

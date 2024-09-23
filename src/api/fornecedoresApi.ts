@@ -38,13 +38,13 @@ export const getAllFornecedores = async (): Promise<Fornecedores[]> => {
 };
 
 // Criar um novo fornecedor
-export const createFornecedores = async (fornecedor: Omit<Fornecedores, 'dtCadastro'>): Promise<Fornecedores> => {
+export const createFornecedores = async (fornecedor: Omit<Fornecedores, 'CodFornecedor'>): Promise<Fornecedores> => {
   const response = await axios.post<Fornecedores>(API_URL, fornecedor);
   return response.data;
 };
 
 // Editar um fornecedor existente
-export const editFornecedores = async (id: string, fornecedor: Omit<Fornecedores, 'dtCadastro'>): Promise<Fornecedores> => {
+export const editFornecedores = async (id: string, fornecedor: Omit<Fornecedores, 'CodFornecedor'>): Promise<Fornecedores> => {
   const response = await axios.put<Fornecedores>(`${API_URL}/${id}`, fornecedor);
   return response.data;
 };
