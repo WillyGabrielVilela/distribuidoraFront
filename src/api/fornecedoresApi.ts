@@ -13,7 +13,7 @@ export interface Fornecedores {
 
 // Pegar todos os fornecedores
 export const getAllFornecedores = async (): Promise<Fornecedores[]> => {
-  const response = await axios.get<Fornecedores[]>(API_URL);
+  const response = await axios.get<Fornecedores[]>(`${API_URL}/listarFornecedores`);
   return response.data;
 };
 
