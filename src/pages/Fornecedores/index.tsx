@@ -5,7 +5,7 @@ import {
   createFornecedores,
   editFornecedores,
   deleteFornecedores,
-  Fornecedores,
+  Fornecedor,
 } from '../../api/fornecedoresApi';
 import {
   PageContainer,
@@ -19,10 +19,10 @@ import {
 } from './styles';
 import SidebarComponent from '../../components/Sidebar';
 
-const Fornecedor: React.FC = () => {
+const Fornecedores: React.FC = () => {
   const navigate = useNavigate();
-  const [fornecedores, setFornecedores] = useState<Fornecedores[]>([]);
-  const [novoFornecedores, setNovoFornecedores] = useState<Omit<Fornecedores, 'dtCadastro' | 'CodFornecedor'>>({
+  const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
+  const [novoFornecedor, setNovoFornecedor] = useState<Omit<Fornecedor, 'codFornecedor' | 'dtCadastro'>>({
     nomeFornecedor: '',
     cnpj: '',
     enderecoComercial: '',
@@ -48,7 +48,7 @@ const Fornecedor: React.FC = () => {
     planoPagamentoId: null,
     clienteId: null,
   });
-  const [editando, setEditando] = useState<Fornecedores | null>(null);
+  const [editando, setEditando] = useState<Fornecedor | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -67,11 +67,16 @@ const Fornecedor: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const fornecedorData: Omit<Fornecedor, 'codFornecedor'> = {
+        ...novoFornecedor,
+        dtCadastro: new Date().toISOString(), // ou um valor padrão que você deseja usar
+      };
+  
       if (editando) {
-        await editFornecedores(editando.cnpj, novoFornecedores);
+        await editFornecedores(editando.codFornecedor, fornecedorData);
         setEditando(null);
       } else {
-        await createFornecedores(novoFornecedores);
+        await createFornecedores(fornecedorData);
       }
       resetForm();
       setIsModalOpen(false);
@@ -80,9 +85,10 @@ const Fornecedor: React.FC = () => {
       console.error('Erro ao salvar fornecedor:', error);
     }
   };
+  
 
   const resetForm = () => {
-    setNovoFornecedores({
+    setNovoFornecedor({
       nomeFornecedor: '',
       cnpj: '',
       enderecoComercial: '',
@@ -110,8 +116,8 @@ const Fornecedor: React.FC = () => {
     });
   };
 
-  const handleEdit = (fornecedor: Fornecedores) => {
-    setNovoFornecedores({
+  const handleEdit = (fornecedor: Fornecedor) => {
+    setNovoFornecedor({
       nomeFornecedor: fornecedor.nomeFornecedor,
       cnpj: fornecedor.cnpj,
       enderecoComercial: fornecedor.enderecoComercial,
@@ -141,9 +147,9 @@ const Fornecedor: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (codFornecedor: string) => {
     try {
-      await deleteFornecedores(id);
+      await deleteFornecedores(codFornecedor);
       carregarFornecedores();
     } catch (error) {
       console.error('Erro ao excluir fornecedor:', error);
@@ -151,8 +157,8 @@ const Fornecedor: React.FC = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNovoFornecedores({
-      ...novoFornecedores,
+    setNovoFornecedor({
+      ...novoFornecedor,
       [e.target.name]: e.target.value,
     });
   };
@@ -188,7 +194,7 @@ const Fornecedor: React.FC = () => {
           </thead>
           <tbody>
             {fornecedores.map((fornecedor) => (
-              <tr key={fornecedor.cnpj}>
+              <tr key={fornecedor.codFornecedor}>
                 <td>{fornecedor.nomeFornecedor}</td>
                 <td>{fornecedor.cnpj}</td>
                 <td>{fornecedor.enderecoComercial}</td>
@@ -196,7 +202,7 @@ const Fornecedor: React.FC = () => {
                 <td>{fornecedor.email}</td>
                 <td>
                   <button className="edit-btn" onClick={() => handleEdit(fornecedor)}>Editar</button>
-                  <button className="delete-btn" onClick={() => handleDelete(fornecedor.cnpj)}>Excluir</button>
+                  <button className="delete-btn" onClick={() => handleDelete(fornecedor.codFornecedor)}>Excluir</button>
                 </td>
               </tr>
             ))}
@@ -214,7 +220,7 @@ const Fornecedor: React.FC = () => {
                     <input
                       type="text"
                       name="nomeFornecedor"
-                      value={novoFornecedores.nomeFornecedor}
+                      value={novoFornecedor.nomeFornecedor}
                       onChange={handleChange}
                       required
                     />
@@ -224,7 +230,7 @@ const Fornecedor: React.FC = () => {
                     <input
                       type="text"
                       name="cnpj"
-                      value={novoFornecedores.cnpj}
+                      value={novoFornecedor.cnpj}
                       onChange={handleChange}
                       required
                     />
@@ -234,7 +240,7 @@ const Fornecedor: React.FC = () => {
                     <input
                       type="text"
                       name="enderecoComercial"
-                      value={novoFornecedores.enderecoComercial}
+                      value={novoFornecedor.enderecoComercial}
                       onChange={handleChange}
                       required
                     />
@@ -244,7 +250,7 @@ const Fornecedor: React.FC = () => {
                     <input
                       type="text"
                       name="telefone"
-                      value={novoFornecedores.telefone}
+                      value={novoFornecedor.telefone}
                       onChange={handleChange}
                       required
                     />
@@ -254,16 +260,14 @@ const Fornecedor: React.FC = () => {
                     <input
                       type="email"
                       name="email"
-                      value={novoFornecedores.email}
+                      value={novoFornecedor.email}
                       onChange={handleChange}
                       required
                     />
                   </div>
                   <ButtonGroup>
-                    <button type="submit">
-                      {editando ? 'Atualizar Fornecedor' : 'Adicionar Fornecedor'}
-                    </button>
-                    <button type="button" className="cancel" onClick={() => setIsModalOpen(false)}>Cancelar</button>
+                    <button type="submit">{editando ? 'Atualizar' : 'Adicionar'}</button>
+                    <button type="button" onClick={() => setIsModalOpen(false)}>Cancelar</button>
                   </ButtonGroup>
                 </form>
               </ModalContent>
@@ -275,4 +279,4 @@ const Fornecedor: React.FC = () => {
   );
 };
 
-export default Fornecedor;
+export default Fornecedores;

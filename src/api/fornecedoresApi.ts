@@ -3,7 +3,8 @@ import axios from 'axios';
 const API_URL = 'http://localhost:8080/api/fornecedores';
 
 // Interface baseada no Fornecedor
-export interface Fornecedores {
+export interface Fornecedor {
+  codFornecedor: string; // Adicionei esta propriedade, pois é necessário para operações de edição e exclusão.
   nomeFornecedor: string;
   cnpj: string;
   enderecoComercial: string;
@@ -32,24 +33,24 @@ export interface Fornecedores {
 }
 
 // Pegar todos os fornecedores
-export const getAllFornecedores = async (): Promise<Fornecedores[]> => {
-  const response = await axios.get<Fornecedores[]>(`${API_URL}/listarFornecedores`);
+export const getAllFornecedores = async (): Promise<Fornecedor[]> => {
+  const response = await axios.get<Fornecedor[]>(`${API_URL}/listarFornecedores`);
   return response.data;
 };
 
 // Criar um novo fornecedor
-export const createFornecedores = async (fornecedor: Omit<Fornecedores, 'CodFornecedor'>): Promise<Fornecedores> => {
-  const response = await axios.post<Fornecedores>(API_URL, fornecedor);
+export const createFornecedores = async (fornecedor: Omit<Fornecedor, 'codFornecedor'>): Promise<Fornecedor> => {
+  const response = await axios.post<Fornecedor>(`${API_URL}/criarFornecedor`, fornecedor);
   return response.data;
 };
 
 // Editar um fornecedor existente
-export const editFornecedores = async (id: string, fornecedor: Omit<Fornecedores, 'CodFornecedor'>): Promise<Fornecedores> => {
-  const response = await axios.put<Fornecedores>(`${API_URL}/${id}`, fornecedor);
+export const editFornecedores = async (codFornecedor: string, fornecedor: Omit<Fornecedor, 'codFornecedor'>): Promise<Fornecedor> => {
+  const response = await axios.put<Fornecedor>(`${API_URL}/${codFornecedor}`, fornecedor);
   return response.data;
 };
 
 // Excluir um fornecedor existente
-export const deleteFornecedores = async (id: string): Promise<void> => {
-  await axios.delete(`${API_URL}/${id}`);
+export const deleteFornecedores = async (codFornecedor: string): Promise<void> => {
+  await axios.delete(`${API_URL}/${codFornecedor}`);
 };
