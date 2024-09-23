@@ -111,8 +111,8 @@ const Fornecedores: React.FC = () => {
       cepCobranca: '',
       telefone: '',
       email: '',
-      planoPagamentoId: null,
-      clienteId: null,
+      planoPagamentoId: 1,
+      clienteId: 1,
     });
   };
 
@@ -140,8 +140,8 @@ const Fornecedores: React.FC = () => {
       cepCobranca: fornecedor.cepCobranca,
       telefone: fornecedor.telefone,
       email: fornecedor.email,
-      planoPagamentoId: fornecedor.planoPagamentoId,
-      clienteId: fornecedor.clienteId,
+      planoPagamentoId: 1,
+      clienteId: 1,
     });
     setEditando(fornecedor);
     setIsModalOpen(true);
