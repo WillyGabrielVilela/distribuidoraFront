@@ -7,7 +7,7 @@ import SidebarComponent from '../../components/Sidebar';
 const Clientes: React.FC = () => {
   const navigate = useNavigate();
   const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [novoCliente, setNovoCliente] = useState<Omit<Cliente, 'codCliente'>>({
+  const [novoCliente, setNovoCliente] = useState<Omit<Cliente, 'dtCadastro' | 'codCliente'>>({
     nomeCliente: '',
     enderecoComercial: '',
     telefone: '',
@@ -31,11 +31,16 @@ const Clientes: React.FC = () => {
     cidadeCobranca: '',
     ufCobranca: '',
     cepCobranca: '',
-    planoPagamento: {
-      codPlanoPag: '',
-      descricao: ''
-    },
-    dtCadastro: ''
+    contatoCargo1: '',
+    contatoNome1: '',
+    contatoCpf1: '',
+    contatoCargo2: '',
+    contatoNome2: '',
+    contatoCpf2: '',
+    contatoCargo3: '',
+    contatoNome3: '',
+    contatoCpf3: '',
+    prazoPagamento: 1 // Coloque um valor padrão, se necessário
   });
   const [editando, setEditando] = useState<Cliente | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -57,7 +62,7 @@ const Clientes: React.FC = () => {
     e.preventDefault();
     try {
       if (editando) {
-        await editCliente(editando.codCliente, { ...novoCliente, codCliente: editando.codCliente });
+        await editCliente(editando.codCliente, { ...novoCliente });
         setEditando(null);
       } else {
         await createCliente(novoCliente);
@@ -86,11 +91,16 @@ const Clientes: React.FC = () => {
         cidadeCobranca: '',
         ufCobranca: '',
         cepCobranca: '',
-        planoPagamento: {
-          codPlanoPag: '',
-          descricao: ''
-        },
-        dtCadastro: ''
+        contatoCargo1: '',
+        contatoNome1: '',
+        contatoCpf1: '',
+        contatoCargo2: '',
+        contatoNome2: '',
+        contatoCpf2: '',
+        contatoCargo3: '',
+        contatoNome3: '',
+        contatoCpf3: '',
+        prazoPagamento: 1,
       });
       setShowModal(false);
       carregarClientes();
@@ -124,8 +134,16 @@ const Clientes: React.FC = () => {
       cidadeCobranca: cliente.cidadeCobranca,
       ufCobranca: cliente.ufCobranca,
       cepCobranca: cliente.cepCobranca,
-      planoPagamento: cliente.planoPagamento,
-      dtCadastro: cliente.dtCadastro
+      contatoCargo1: cliente.contatoCargo1,
+      contatoNome1: cliente.contatoNome1,
+      contatoCpf1: cliente.contatoCpf1,
+      contatoCargo2: cliente.contatoCargo2,
+      contatoNome2: cliente.contatoNome2,
+      contatoCpf2: cliente.contatoCpf2,
+      contatoCargo3: cliente.contatoCargo3,
+      contatoNome3: cliente.contatoNome3,
+      contatoCpf3: cliente.contatoCpf3,
+      prazoPagamento: 1,
     });
     setEditando(cliente);
     setShowModal(true);
