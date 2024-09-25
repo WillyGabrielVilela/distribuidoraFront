@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllClientes, createCliente, editCliente, deleteCliente, Cliente } from '../../api/clienteApi';
+import { buscarEnderecoPorCep } from '../../api/cepApi'; // Importar a função de busca de CEP
 import { PageContainer, MainContent, ContentHeader, Table, Modal, ModalContent, Overlay, ButtonGroup } from './styles';
 import SidebarComponent from '../../components/Sidebar';
+import InputMask from 'react-input-mask';
 
 const Clientes: React.FC = () => {
   const navigate = useNavigate();
@@ -60,6 +62,15 @@ const Clientes: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Verificar se o CNPJ/CPF já está cadastrado
+    const clienteExistente = clientes.find(cliente => cliente.cgcEnt === novoCliente.cgcEnt);
+
+    if (clienteExistente && (!editando || clienteExistente.codCliente !== editando.codCliente)) {
+      alert('Erro: CNPJ/CPF já cadastrado.');
+      return; // Impede o envio se já existir
+    }
+
     try {
       if (editando) {
         await editCliente(editando.codCliente, { ...novoCliente });
@@ -67,6 +78,7 @@ const Clientes: React.FC = () => {
       } else {
         await createCliente(novoCliente);
       }
+
       setNovoCliente({
         nomeCliente: '',
         enderecoComercial: '',
@@ -102,12 +114,46 @@ const Clientes: React.FC = () => {
         contatoCpf3: '',
         prazoPagamento: 1,
       });
+
       setShowModal(false);
       carregarClientes();
     } catch (error) {
       console.error('Erro ao salvar cliente:', error);
     }
   };
+
+  const ramosCnae = [
+    'Agropecuária',
+    'Indústria de Alimentos',
+    'Comércio Varejista',
+    'Comércio Atacadista',
+    'Transporte de Cargas',
+    'Transporte de Passageiros',
+    'Serviços de Tecnologia da Informação',
+    'Educação',
+    'Saúde',
+    'Construção Civil',
+    'Hotelaria',
+    'Turismo',
+    'Serviços de Limpeza',
+    'Serviços de Segurança',
+    'Serviços de Consultoria',
+    'Atividades Artísticas',
+    'Indústria Têxtil',
+    'Indústria Química',
+    'Indústria Metalúrgica',
+    'Comércio de Veículos',
+    'Serviços Financeiros',
+    'Serviços de Telecomunicações',
+    'Atividades Recreativas',
+    'Serviços de Publicidade',
+    'Indústria de Papel e Celulose',
+    'Indústria de Móveis',
+    'Serviços de Marketing',
+    'Indústria de Bebidas',
+    'Indústria Farmacêutica',
+    'Serviços de Jardinagem',
+  ];
 
   const handleEdit = (cliente: Cliente) => {
     setNovoCliente({
@@ -158,6 +204,31 @@ const Clientes: React.FC = () => {
     }
   };
 
+  const handleCepChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const cepComMascara = e.target.value;
+    const cepSemMascara = cepComMascara.replace(/\D/g, '');
+
+    setNovoCliente((prevCliente) => ({
+      ...prevCliente,
+      cepComercial: cepComMascara,
+    }));
+
+    if (cepSemMascara.length === 8) {
+      try {
+        const endereco = await buscarEnderecoPorCep(cepSemMascara);
+        setNovoCliente((prevCliente) => ({
+          ...prevCliente,
+          enderecoComercial: endereco.logradouro || '',
+          bairroComercial: endereco.bairro || '',
+          cidadeComercial: endereco.localidade || '',
+          ufComercial: endereco.uf || '',
+        }));
+      } catch (error) {
+        console.error("Erro ao buscar o endereço. Verifique o CEP.", error);
+      }
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNovoCliente({
       ...novoCliente,
@@ -185,9 +256,11 @@ const Clientes: React.FC = () => {
           <thead>
             <tr>
               <th>Nome</th>
+              <th>CPF</th>
               <th>Endereço Comercial</th>
               <th>Telefone</th>
               <th>Email</th>
+              <th>Ramo de Atividade</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -195,9 +268,11 @@ const Clientes: React.FC = () => {
             {clientes.map((cliente) => (
               <tr key={cliente.codCliente}>
                 <td>{cliente.nomeCliente}</td>
+                <td>{cliente.cgcEnt}</td>
                 <td>{cliente.enderecoComercial}</td>
                 <td>{cliente.telefone}</td>
                 <td>{cliente.email}</td>
+                <td>{cliente.ramoAtividade}</td>
                 <td>
                   <button className="edit-btn" onClick={() => handleEdit(cliente)}>Editar</button>
                   <button className="delete-btn" onClick={() => handleDelete(cliente.codCliente)}>Excluir</button>
@@ -224,6 +299,17 @@ const Clientes: React.FC = () => {
                     />
                   </div>
                   <div>
+                    <label>CPF/CNPJ:</label>
+                    <InputMask
+                      mask='999.999.999-99'
+                      type="text"
+                      name="cgcEnt"
+                      value={novoCliente.cgcEnt}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
                     <label>Endereço Comercial:</label>
                     <input
                       type="text"
@@ -235,7 +321,8 @@ const Clientes: React.FC = () => {
                   </div>
                   <div>
                     <label>Telefone:</label>
-                    <input
+                    <InputMask
+                      mask='(99)99999-9999'
                       type="text"
                       name="telefone"
                       value={novoCliente.telefone}
@@ -250,6 +337,73 @@ const Clientes: React.FC = () => {
                       name="email"
                       value={novoCliente.email}
                       onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Ramo de Atividade:</label>
+                    <select
+                      name="ramoAtividade"
+                      value={novoCliente.ramoAtividade}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Selecione uma atividade</option>
+                      {ramosCnae.map((ramo) => (
+                        <option key={ramo} value={ramo}>
+                          {ramo}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label>Complemento Comercial:</label>
+                    <input
+                      type="text"
+                      name="complementoComercial"
+                      value={novoCliente.complementoComercial}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Bairro Comercial:</label>
+                    <input
+                      type="text"
+                      name="bairroComercial"
+                      value={novoCliente.bairroComercial}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Cidade Comercial:</label>
+                    <input
+                      type="text"
+                      name="cidadeComercial"
+                      value={novoCliente.cidadeComercial}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>UF Comercial:</label>
+                    <input
+                      type="text"
+                      name="ufComercial"
+                      value={novoCliente.ufComercial}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>CEP Comercial:</label>
+                    <InputMask
+                      mask='99999-999'
+                      type="text"
+                      name="cepComercial"
+                      value={novoCliente.cepComercial}
+                      onChange={handleCepChange} // Atualiza o CEP e busca endereço}
                       required
                     />
                   </div>
