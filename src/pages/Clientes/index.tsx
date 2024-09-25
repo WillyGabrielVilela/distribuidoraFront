@@ -99,6 +99,13 @@ const Clientes: React.FC = () => {
     }
   };
 
+  const [errorMessages, setErrorMessages] = useState<{ [key: string]: string }>({
+    nomeCliente: '', // Inicialmente, nenhum erro nos campos
+    ramoAtividade: '',
+    telefone: '',
+    cgcEnt: ''
+  });
+
   const handleEdit = (cliente: Cliente) => {
     setNovoCliente({
       nomeCliente: cliente.nomeCliente,
@@ -140,10 +147,40 @@ const Clientes: React.FC = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Função para validar campos que devem aceitar apenas letras
+const validarApenasLetras = (value: string, name: string) => {
+  const newValue = value.replace(/[^a-zA-ZÀ-ÿ\s]/g, ''); // Remove números e caracteres especiais, exceto letras e acentos
+  if (newValue !== value) {
+    setErrorMessages((prev) => ({ ...prev, [name]: 'Apenas letras são permitidas' }));
+  } else {
+    setErrorMessages((prev) => ({ ...prev, [name]: '' }));
+  }
+  return newValue;
+};
+
+// Função para validar campos que devem aceitar apenas números
+const validarApenasNumeros = (value: string, name: string) => {
+  const newValue = value.replace(/[^0-9]/g, ''); // Remove tudo que não for número
+  if (newValue !== value) {
+    setErrorMessages((prev) => ({ ...prev, [name]: 'Apenas números são permitidos' }));
+  } else {
+    setErrorMessages((prev) => ({ ...prev, [name]: '' }));
+  }
+  return newValue;
+};
+
+const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target;
+
+  let newValue = value;
+  if (name === 'nomeCliente' || name === 'ramoAtividade') {
+    newValue = validarApenasLetras(value, name); // Adicione o nome como segundo argumento
+  } else if (name === 'telefone' || name === 'cgcEnt' || name.startsWith('cep')) {
+    newValue = validarApenasNumeros(value, name); // Adicione o nome como segundo argumento
+  }
     setNovoCliente({
       ...novoCliente,
-      [e.target.name]: e.target.value
+      [name]: newValue
     });
   };
 
@@ -192,55 +229,250 @@ const Clientes: React.FC = () => {
         {showModal && (
           <Overlay>
             <Modal>
-              <ModalContent>
-                <h2>{editando ? 'Editar Cliente' : 'Adicionar Cliente'}</h2>
-                <form onSubmit={handleSubmit}>
-                  <div>
-                    <label>Nome:</label>
-                    <input
-                      type="text"
-                      name="nomeCliente"
-                      value={novoCliente.nomeCliente}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Endereço Comercial:</label>
-                    <input
-                      type="text"
-                      name="enderecoComercial"
-                      value={novoCliente.enderecoComercial}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Telefone:</label>
-                    <input
-                      type="text"
-                      name="telefone"
-                      value={novoCliente.telefone}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Email:</label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={novoCliente.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <ButtonGroup>
-                    <button type="submit">{editando ? 'Atualizar' : 'Adicionar'}</button>
-                    <button type="button" onClick={() => setShowModal(false)}>Cancelar</button>
-                  </ButtonGroup>
-                </form>
-              </ModalContent>
+            <ModalContent>
+  <h2>{editando ? 'Editar Cliente' : 'Adicionar Cliente'}</h2>
+  <form onSubmit={handleSubmit}>
+    <div>
+      <label>Nome:</label>
+      <input
+        type="text"
+        name="nomeCliente"
+        value={novoCliente.nomeCliente}
+        onChange={handleChange}
+        required
+      />
+    </div>
+    {errorMessages.nomeCliente && (
+      <p style={{ color: 'red', fontSize: '12px' }}>
+        {errorMessages.nomeCliente}
+      </p>
+    )}
+     <div>
+      <label>Telefone:</label>
+      <input
+        type="text"
+        name="telefone"
+        value={novoCliente.telefone}
+        onChange={handleChange}
+        required
+      />
+    </div>
+    {errorMessages.telefone && (
+      <p style={{ color: 'red', fontSize: '12px' }}>
+        {errorMessages.telefone}
+      </p>
+    )}
+    <div>
+      <label>Email:</label>
+      <input
+        type="email"
+        name="email"
+        value={novoCliente.email}
+        onChange={handleChange}
+        required
+      />
+    </div>
+
+    <div>
+      <label>CGC:</label>
+      <input
+        type="text"
+        name="cgcEnt"
+        value={novoCliente.cgcEnt}
+        onChange={handleChange}
+        required
+      />
+    </div>
+    <div>
+      <label>Ramo de Atividade:</label>
+      <input
+        type="text"
+        name="ramoAtividade"
+        value={novoCliente.ramoAtividade}
+        onChange={handleChange}
+        required
+      />
+    </div>
+    <div>
+      <label>Endereço Comercial:</label>
+      <input
+        type="text"
+        name="enderecoComercial"
+        value={novoCliente.enderecoComercial}
+        onChange={handleChange}
+        required
+      />
+    </div>
+    <div>
+      <label>Complemento Comercial:</label>
+      <input
+        type="text"
+        name="complementoComercial"
+        value={novoCliente.complementoComercial}
+        onChange={handleChange}
+        required
+      />
+    </div>
+    <div>
+      <label>Bairro Comercial:</label>
+      <input
+        type="text"
+        name="bairroComercial"
+        value={novoCliente.bairroComercial}
+        onChange={handleChange}
+        required
+      />
+    </div>
+    <div>
+      <label>Cidade Comercial:</label>
+      <input
+        type="text"
+        name="cidadeComercial"
+        value={novoCliente.cidadeComercial}
+        onChange={handleChange}
+        required
+      />
+    </div>
+    <div>
+      <label>UF Comercial:</label>
+      <input
+        type="text"
+        name="ufComercial"
+        value={novoCliente.ufComercial}
+        onChange={handleChange}
+        required
+      />
+    </div>
+    <div>
+      <label>CEP Comercial:</label>
+      <input
+        type="text"
+        name="cepComercial"
+        value={novoCliente.cepComercial}
+        onChange={handleChange}
+        required
+      />
+    </div>
+   
+    {/* Campos de Endereço de Entrega */}
+    <div>
+      <label>Endereço de Entrega:</label>
+      <input
+        type="text"
+        name="enderecoEntrega"
+        value={novoCliente.enderecoEntrega}
+        onChange={handleChange}
+      />
+    </div>
+    <div>
+      <label>Complemento de Entrega:</label>
+      <input
+        type="text"
+        name="complementoEntrega"
+        value={novoCliente.complementoEntrega}
+        onChange={handleChange}
+      />
+    </div>
+    <div>
+      <label>Bairro de Entrega:</label>
+      <input
+        type="text"
+        name="bairroEntrega"
+        value={novoCliente.bairroEntrega}
+        onChange={handleChange}
+      />
+    </div>
+    <div>
+      <label>Cidade de Entrega:</label>
+      <input
+        type="text"
+        name="cidadeEntrega"
+        value={novoCliente.cidadeEntrega}
+        onChange={handleChange}
+      />
+    </div>
+    <div>
+      <label>UF de Entrega:</label>
+      <input
+        type="text"
+        name="ufEntrega"
+        value={novoCliente.ufEntrega}
+        onChange={handleChange}
+      />
+    </div>
+    <div>
+      <label>CEP de Entrega:</label>
+      <input
+        type="text"
+        name="cepEntrega"
+        value={novoCliente.cepEntrega}
+        onChange={handleChange}
+      />
+    </div>
+
+    {/* Campos de Endereço de Cobrança */}
+    <div>
+      <label>Endereço de Cobrança:</label>
+      <input
+        type="text"
+        name="enderecoCobranca"
+        value={novoCliente.enderecoCobranca}
+        onChange={handleChange}
+      />
+    </div>
+    <div>
+      <label>Complemento de Cobrança:</label>
+      <input
+        type="text"
+        name="complementoCobranca"
+        value={novoCliente.complementoCobranca}
+        onChange={handleChange}
+      />
+    </div>
+    <div>
+      <label>Bairro de Cobrança:</label>
+      <input
+        type="text"
+        name="bairroCobranca"
+        value={novoCliente.bairroCobranca}
+        onChange={handleChange}
+      />
+    </div>
+    <div>
+      <label>Cidade de Cobrança:</label>
+      <input
+        type="text"
+        name="cidadeCobranca"
+        value={novoCliente.cidadeCobranca}
+        onChange={handleChange}
+      />
+    </div>
+    <div>
+      <label>UF de Cobrança:</label>
+      <input
+        type="text"
+        name="ufCobranca"
+        value={novoCliente.ufCobranca}
+        onChange={handleChange}
+      />
+    </div>
+    <div>
+      <label>CEP de Cobrança:</label>
+      <input
+        type="text"
+        name="cepCobranca"
+        value={novoCliente.cepCobranca}
+        onChange={handleChange}
+      />
+    </div>
+
+    <ButtonGroup>
+      <button type="submit">{editando ? 'Atualizar' : 'Adicionar'}</button>
+      <button type="button" onClick={() => setShowModal(false)}>Cancelar</button>
+    </ButtonGroup>
+  </form>
+</ModalContent>
+
             </Modal>
           </Overlay>
         )}

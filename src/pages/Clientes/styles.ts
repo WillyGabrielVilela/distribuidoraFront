@@ -112,6 +112,13 @@ export const Modal = styled.div`
 `;
 
 export const ModalContent = styled.div`
+
+max-height: 80vh; /* Altura máxima do modal */
+  overflow-y: auto; /* Permitir rolagem vertical */
+  padding: 20px; /* Espaçamento interno */
+  border-radius: 8px; /* Bordas arredondadas */
+  background-color: white; /* Cor de fundo */
+
   h2 {
     margin-top: 0;
   }
