@@ -310,6 +310,17 @@ const Clientes: React.FC = () => {
                     />
                   </div>
                   <div>
+                    <label>CEP Comercial:</label>
+                    <InputMask
+                      mask='99999-999'
+                      type="text"
+                      name="cepComercial"
+                      value={novoCliente.cepComercial}
+                      onChange={handleCepChange} // Atualiza o CEP e busca endereço}
+                      required
+                    />
+                  </div>
+                  <div>
                     <label>Endereço Comercial:</label>
                     <input
                       type="text"
@@ -396,17 +407,7 @@ const Clientes: React.FC = () => {
                       required
                     />
                   </div>
-                  <div>
-                    <label>CEP Comercial:</label>
-                    <InputMask
-                      mask='99999-999'
-                      type="text"
-                      name="cepComercial"
-                      value={novoCliente.cepComercial}
-                      onChange={handleCepChange} // Atualiza o CEP e busca endereço}
-                      required
-                    />
-                  </div>
+                  
                   <ButtonGroup>
                     <button type="submit">{editando ? 'Atualizar' : 'Adicionar'}</button>
                     <button type="button" onClick={() => setShowModal(false)}>Cancelar</button>
