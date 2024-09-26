@@ -26,11 +26,7 @@ const Pedidos: React.FC = () => {
 
   const carregarDados = async () => {
     try {
-      const [pedidos, clientes, produtos] = await Promise.all([
-        getAllPedidos(),
-        getAllClientes(),
-        getAllProdutos()
-      ]);
+      const [pedidos, clientes, produtos] = await Promise.all([getAllPedidos(), getAllClientes(), getAllProdutos()]);
       setPedidos(pedidos);
       setClientes(clientes);
       setProdutos(produtos);
@@ -65,8 +61,8 @@ const Pedidos: React.FC = () => {
 
   const handleEdit = (pedido: Pedido) => {
     setNovoPedido({
-      clienteId: pedido.clienteId,
-      produtoId: pedido.produtoId,
+      clienteId: pedido.cliente.codCliente.toString(),
+      produtoId: pedido.produto.codProduto.toString(),
       quantidade: pedido.quantidade,
       dataEntrega: pedido.dataEntrega
     });
@@ -87,7 +83,7 @@ const Pedidos: React.FC = () => {
     const { name, value } = e.target;
     setNovoPedido({
       ...novoPedido,
-      [name]: name === 'produtoId' ? value : value // Mantendo como string
+      [name]: value
     });
   };
 
@@ -96,14 +92,15 @@ const Pedidos: React.FC = () => {
     setShowModal(true);
   };
 
-  // Função atualizada para obter o nome do cliente
-  const getNomeCliente = (clienteId: string) => {
-    const cliente = clientes.find((c) => c.codCliente === clienteId);
+  // Função para obter o nome do cliente usando o código do cliente
+  const getNomeCliente = (codCliente: number) => {
+    const cliente = clientes.find((c) => c.codCliente === codCliente);
     return cliente ? cliente.nomeCliente : 'Desconhecido';
   };
 
-  const getNomeProduto = (produtoId: string) => {
-    const produto = produtos.find((p) => p.codProduto.toString() === produtoId);
+  // Função para obter o nome do produto usando o código do produto
+  const getNomeProduto = (codProduto: number) => {
+    const produto = produtos.find((p) => p.codProduto === codProduto);
     return produto ? produto.nomeProduto : 'Desconhecido';
   };
 
@@ -133,8 +130,8 @@ const Pedidos: React.FC = () => {
             {pedidos.map((pedido) => (
               <tr key={pedido.id}>
                 <td>{pedido.id}</td>
-                <td>{getNomeCliente(pedido.clienteId)}</td>
-                <td>{getNomeProduto(pedido.produtoId)}</td>
+                <td>{getNomeCliente(pedido.cliente.codCliente)}</td>
+                <td>{getNomeProduto(pedido.produto.codProduto)}</td>
                 <td>{pedido.quantidade}</td>
                 <td>{pedido.dataEntrega}</td>
                 <td>
@@ -205,6 +202,7 @@ const Pedidos: React.FC = () => {
                     />
                   </div>
                   <button type="submit">{editando ? 'Salvar Alterações' : 'Adicionar Pedido'}</button>
+                  <button type="button" onClick={() => setShowModal(false)}>Cancelar</button>
                 </form>
               </ModalContent>
             </Modal>
