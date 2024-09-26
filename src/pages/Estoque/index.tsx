@@ -6,7 +6,7 @@ import SidebarComponent from '../../components/Sidebar';
 
 const Estoque: React.FC = () => {
   const navigate = useNavigate();
-  const [estoques, setEstoques] = useState<EstoqueTipo[]>([]); // Atualizado para EstoqueTipo
+  const [estoques, setEstoques] = useState<EstoqueTipo[]>([]);
   const [novoEstoque, setNovoEstoque] = useState<Omit<EstoqueTipo, 'id'>>({
     produtoId: 0,
     qtEstoqueGerencial: 0,
@@ -17,7 +17,7 @@ const Estoque: React.FC = () => {
     dtUltEntrada: '',
     giroProduto: 0,
   });
-  const [editando, setEditando] = useState<EstoqueTipo | null>(null); // Atualizado para EstoqueTipo
+  const [editando, setEditando] = useState<EstoqueTipo | null>(null);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
@@ -37,7 +37,8 @@ const Estoque: React.FC = () => {
     e.preventDefault();
     try {
       if (editando) {
-        await editEstoque(editando.produtoId.toString(), { ...novoEstoque });
+        // Acessar produtoId corretamente
+        await editEstoque(editando.produto.codProduto.toString(), { ...novoEstoque });
         setEditando(null);
       } else {
         await createEstoque(novoEstoque);
@@ -59,9 +60,10 @@ const Estoque: React.FC = () => {
     }
   };
 
-  const handleEdit = (estoque: EstoqueTipo) => { // Atualizado para EstoqueTipo
+  const handleEdit = (estoque: EstoqueTipo) => {
+    // Ajustar para usar o produto.codProduto
     setNovoEstoque({
-      produtoId: estoque.produtoId,
+      produtoId: estoque.produto.codProduto,
       qtEstoqueGerencial: estoque.qtEstoqueGerencial,
       qtTransito: estoque.qtTransito,
       qtDisponivel: estoque.qtDisponivel,
@@ -122,8 +124,8 @@ const Estoque: React.FC = () => {
           </thead>
           <tbody>
             {estoques.map((estoque) => (
-              <tr key={estoque.produtoId}>
-                <td>{estoque.produtoId}</td>
+              <tr key={estoque.produto.codProduto}>
+                <td>{estoque.produto.codProduto}</td>
                 <td>{estoque.qtEstoqueGerencial}</td>
                 <td>{estoque.qtTransito}</td>
                 <td>{estoque.qtDisponivel}</td>
@@ -133,7 +135,7 @@ const Estoque: React.FC = () => {
                 <td>{estoque.giroProduto}</td>
                 <td>
                   <button className="edit-btn" onClick={() => handleEdit(estoque)}>Editar</button>
-                  <button className="delete-btn" onClick={() => handleDelete(estoque.produtoId)}>Excluir</button>
+                  <button className="delete-btn" onClick={() => handleDelete(estoque.produto.codProduto)}>Excluir</button>
                 </td>
               </tr>
             ))}
