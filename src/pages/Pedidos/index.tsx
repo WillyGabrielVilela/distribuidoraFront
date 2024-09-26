@@ -1,55 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllPedidos, createPedido, editPedido, deletePedido, Pedido } from '../../api/pedidoApi';
-import { getAllClientes } from '../../api/clienteApi'; // Supondo que você tenha uma API para clientes
-import { getAllFornecedores } from '../../api/fornecedoresApi'; // Supondo que você tenha uma API para fornecedores
+import { getAllClientes, Cliente as ClienteAPI } from '../../api/clienteApi';
+import { getAllProdutos, Produto } from '../../api/produtoApi';
 import { PageContainer, MainContent, ContentHeader, Table, Modal, ModalContent, Overlay } from './styles';
 import SidebarComponent from '../../components/Sidebar';
 
 const Pedidos: React.FC = () => {
   const navigate = useNavigate();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [clientes, setClientes] = useState<ClienteAPI[]>([]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
   const [novoPedido, setNovoPedido] = useState<Omit<Pedido, 'id'>>({
     clienteId: '',
-    fornecedorId: '',
-    dataPedido: '',
-    itens: [],
+    produtoId: '',
+    quantidade: 0,
+    dataEntrega: ''
   });
   const [editando, setEditando] = useState<Pedido | null>(null);
-  const [modalAberto, setModalAberto] = useState<boolean>(false);
-  const [clientes, setClientes] = useState<any[]>([]); // Ajuste o tipo conforme a estrutura de cliente
-  const [fornecedores, setFornecedores] = useState<any[]>([]); // Ajuste o tipo conforme a estrutura de fornecedor
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    carregarPedidos();
-    carregarClientes();
-    carregarFornecedores();
+    carregarDados();
   }, []);
 
-  const carregarPedidos = async () => {
+  const carregarDados = async () => {
     try {
-      const pedidos = await getAllPedidos();
+      const [pedidos, clientes, produtos] = await Promise.all([
+        getAllPedidos(),
+        getAllClientes(),
+        getAllProdutos()
+      ]);
       setPedidos(pedidos);
-    } catch (error) {
-      console.error('Erro ao carregar pedidos:', error);
-    }
-  };
-
-  const carregarClientes = async () => {
-    try {
-      const clientes = await getAllClientes();
       setClientes(clientes);
+      setProdutos(produtos);
     } catch (error) {
-      console.error('Erro ao carregar clientes:', error);
-    }
-  };
-
-  const carregarFornecedores = async () => {
-    try {
-      const fornecedores = await getAllFornecedores();
-      setFornecedores(fornecedores);
-    } catch (error) {
-      console.error('Erro ao carregar fornecedores:', error);
+      console.error('Erro ao carregar dados:', error);
     }
   };
 
@@ -57,19 +43,21 @@ const Pedidos: React.FC = () => {
     e.preventDefault();
     try {
       if (editando) {
-        await editPedido(editando.id, { ...novoPedido, id: editando.id });
+        await editPedido(editando.id, { ...novoPedido });
         setEditando(null);
       } else {
         await createPedido(novoPedido);
       }
+
       setNovoPedido({
         clienteId: '',
-        fornecedorId: '',
-        dataPedido: '',
-        itens: [],
+        produtoId: '',
+        quantidade: 0,
+        dataEntrega: ''
       });
-      carregarPedidos();
-      setModalAberto(false);
+
+      setShowModal(false);
+      carregarDados();
     } catch (error) {
       console.error('Erro ao salvar pedido:', error);
     }
@@ -78,30 +66,45 @@ const Pedidos: React.FC = () => {
   const handleEdit = (pedido: Pedido) => {
     setNovoPedido({
       clienteId: pedido.clienteId,
-      fornecedorId: pedido.fornecedorId,
-      dataPedido: pedido.dataPedido,
-      itens: pedido.itens,
+      produtoId: pedido.produtoId,
+      quantidade: pedido.quantidade,
+      dataEntrega: pedido.dataEntrega
     });
     setEditando(pedido);
-    setModalAberto(true);
+    setShowModal(true);
   };
 
   const handleDelete = async (id: string) => {
     try {
       await deletePedido(id);
-      carregarPedidos();
+      carregarDados();
     } catch (error) {
       console.error('Erro ao excluir pedido:', error);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    setNovoPedido({
+      ...novoPedido,
+      [name]: name === 'produtoId' ? value : value // Mantendo como string
+    });
+  };
 
-    setNovoPedido(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
+  const handleAddPedido = () => {
+    setEditando(null);
+    setShowModal(true);
+  };
+
+  // Função atualizada para obter o nome do cliente
+  const getNomeCliente = (clienteId: string) => {
+    const cliente = clientes.find((c) => c.codCliente === clienteId);
+    return cliente ? cliente.nomeCliente : 'Desconhecido';
+  };
+
+  const getNomeProduto = (produtoId: string) => {
+    const produto = produtos.find((p) => p.codProduto.toString() === produtoId);
+    return produto ? produto.nomeProduto : 'Desconhecido';
   };
 
   return (
@@ -111,25 +114,29 @@ const Pedidos: React.FC = () => {
       <MainContent>
         <ContentHeader>
           <h1>Pedidos</h1>
-          <button onClick={() => setModalAberto(true)}>Adicionar Pedido</button>
+          <button onClick={handleAddPedido}>Adicionar Pedido</button>
           <button onClick={() => navigate('/')}>Voltar para Home</button>
         </ContentHeader>
 
         <Table>
           <thead>
             <tr>
+              <th>Código Pedido</th>
               <th>Cliente</th>
-              <th>Fornecedor</th>
-              <th>Data</th>
+              <th>Produto</th>
+              <th>Quantidade</th>
+              <th>Data Entrega</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
             {pedidos.map((pedido) => (
               <tr key={pedido.id}>
-                <td>{pedido.clienteId}</td>
-                <td>{pedido.fornecedorId}</td>
-                <td>{pedido.dataPedido}</td>
+                <td>{pedido.id}</td>
+                <td>{getNomeCliente(pedido.clienteId)}</td>
+                <td>{getNomeProduto(pedido.produtoId)}</td>
+                <td>{pedido.quantidade}</td>
+                <td>{pedido.dataEntrega}</td>
                 <td>
                   <button className="edit-btn" onClick={() => handleEdit(pedido)}>Editar</button>
                   <button className="delete-btn" onClick={() => handleDelete(pedido.id)}>Excluir</button>
@@ -138,66 +145,72 @@ const Pedidos: React.FC = () => {
             ))}
           </tbody>
         </Table>
+
+        {showModal && (
+          <Overlay>
+            <Modal>
+              <ModalContent>
+                <h2>{editando ? 'Editar Pedido' : 'Adicionar Pedido'}</h2>
+                <form onSubmit={handleSubmit}>
+                  <div>
+                    <label>Cliente:</label>
+                    <select
+                      name="clienteId"
+                      value={novoPedido.clienteId}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Selecione o cliente</option>
+                      {clientes.map((cliente) => (
+                        <option key={cliente.codCliente} value={cliente.codCliente}>
+                          {cliente.nomeCliente}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label>Produto:</label>
+                    <select
+                      name="produtoId"
+                      value={novoPedido.produtoId}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Selecione o produto</option>
+                      {produtos.map((produto) => (
+                        <option key={produto.codProduto} value={produto.codProduto}>
+                          {produto.nomeProduto}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label>Quantidade:</label>
+                    <input
+                      type="number"
+                      name="quantidade"
+                      value={novoPedido.quantidade}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Data de Entrega:</label>
+                    <input
+                      type="date"
+                      name="dataEntrega"
+                      value={novoPedido.dataEntrega}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <button type="submit">{editando ? 'Salvar Alterações' : 'Adicionar Pedido'}</button>
+                </form>
+              </ModalContent>
+            </Modal>
+          </Overlay>
+        )}
       </MainContent>
-
-      {modalAberto && (
-        <Overlay>
-          <Modal>
-            <ModalContent>
-              <h2>{editando ? 'Editar Pedido' : 'Adicionar Pedido'}</h2>
-              <form onSubmit={handleSubmit}>
-                <div>
-                  <label>Cliente:</label>
-                  <select
-                    name="clienteId"
-                    value={novoPedido.clienteId}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Selecione um cliente</option>
-                    {clientes.map(cliente => (
-                      <option key={cliente.id} value={cliente.id}>
-                        {cliente.nome}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label>Fornecedor:</label>
-                  <select
-                    name="fornecedorId"
-                    value={novoPedido.fornecedorId}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Selecione um fornecedor</option>
-                    {fornecedores.map(fornecedor => (
-                      <option key={fornecedor.id} value={fornecedor.id}>
-                        {fornecedor.nome}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label>Data do Pedido:</label>
-                  <input
-                    type="date"
-                    name="dataPedido"
-                    value={novoPedido.dataPedido}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <button type="submit">
-                  {editando ? 'Atualizar Pedido' : 'Adicionar Pedido'}
-                </button>
-                <button type="button" onClick={() => setModalAberto(false)}>Cancelar</button>
-              </form>
-            </ModalContent>
-          </Modal>
-        </Overlay>
-      )}
     </PageContainer>
   );
 };
