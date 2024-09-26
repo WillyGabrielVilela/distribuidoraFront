@@ -1,30 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllProdutos, createProduto, editProduto, deleteProduto, Produto } from '../../api/produtosApi';
+import { getAllEstoques, createEstoque, editEstoque, deleteEstoque, Estoque as EstoqueTipo } from '../../api/estoqueApi'; // Renomeado Estoque para EstoqueTipo
 import { PageContainer, MainContent, ContentHeader, Table, Modal, ModalContent, Overlay, ButtonGroup } from './styles';
 import SidebarComponent from '../../components/Sidebar';
 
 const Estoque: React.FC = () => {
   const navigate = useNavigate();
-  const [produtos, setProdutos] = useState<Produto[]>([]);
-  const [novoProduto, setNovoProduto] = useState<Omit<Produto, 'id'>>({
-    nome: '',
-    descricao: '',
-    quantidade: 0
+  const [estoques, setEstoques] = useState<EstoqueTipo[]>([]); // Atualizado para EstoqueTipo
+  const [novoEstoque, setNovoEstoque] = useState<Omit<EstoqueTipo, 'id'>>({
+    produtoId: 0,
+    qtEstoqueGerencial: 0,
+    qtTransito: 0,
+    qtDisponivel: 0,
+    qtReservada: 0,
+    dtValidade: '',
+    dtUltEntrada: '',
+    giroProduto: 0,
   });
-  const [editando, setEditando] = useState<Produto | null>(null);
+  const [editando, setEditando] = useState<EstoqueTipo | null>(null); // Atualizado para EstoqueTipo
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    carregarProdutos();
+    carregarEstoques();
   }, []);
 
-  const carregarProdutos = async () => {
+  const carregarEstoques = async () => {
     try {
-      const produtos = await getAllProdutos();
-      setProdutos(produtos);
+      const estoques = await getAllEstoques();
+      setEstoques(estoques);
     } catch (error) {
-      console.error('Erro ao carregar produtos:', error);
+      console.error('Erro ao carregar estoques:', error);
     }
   };
 
@@ -32,46 +37,60 @@ const Estoque: React.FC = () => {
     e.preventDefault();
     try {
       if (editando) {
-        await editProduto(editando.id, { ...novoProduto, id: editando.id });
+        await editEstoque(editando.produtoId.toString(), { ...novoEstoque });
         setEditando(null);
       } else {
-        await createProduto(novoProduto);
+        await createEstoque(novoEstoque);
       }
-      setNovoProduto({ nome: '', descricao: '', quantidade: 0 });
+      setNovoEstoque({
+        produtoId: 0,
+        qtEstoqueGerencial: 0,
+        qtTransito: 0,
+        qtDisponivel: 0,
+        qtReservada: 0,
+        dtValidade: '',
+        dtUltEntrada: '',
+        giroProduto: 0,
+      });
       setShowModal(false);
-      carregarProdutos();
+      carregarEstoques();
     } catch (error) {
-      console.error('Erro ao salvar produto:', error);
+      console.error('Erro ao salvar estoque:', error);
     }
   };
 
-  const handleEdit = (produto: Produto) => {
-    setNovoProduto({
-      nome: produto.nome,
-      descricao: produto.descricao,
-      quantidade: produto.quantidade
+  const handleEdit = (estoque: EstoqueTipo) => { // Atualizado para EstoqueTipo
+    setNovoEstoque({
+      produtoId: estoque.produtoId,
+      qtEstoqueGerencial: estoque.qtEstoqueGerencial,
+      qtTransito: estoque.qtTransito,
+      qtDisponivel: estoque.qtDisponivel,
+      qtReservada: estoque.qtReservada,
+      dtValidade: estoque.dtValidade,
+      dtUltEntrada: estoque.dtUltEntrada,
+      giroProduto: estoque.giroProduto,
     });
-    setEditando(produto);
+    setEditando(estoque);
     setShowModal(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     try {
-      await deleteProduto(id);
-      carregarProdutos();
+      await deleteEstoque(id.toString());
+      carregarEstoques();
     } catch (error) {
-      console.error('Erro ao excluir produto:', error);
+      console.error('Erro ao excluir estoque:', error);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNovoProduto({
-      ...novoProduto,
-      [e.target.name]: e.target.value
+    setNovoEstoque({
+      ...novoEstoque,
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleAddProduto = () => {
+  const handleAddEstoque = () => {
     setEditando(null);
     setShowModal(true);
   };
@@ -82,29 +101,39 @@ const Estoque: React.FC = () => {
 
       <MainContent>
         <ContentHeader>
-          <h1>Produtos</h1>
-          <button onClick={handleAddProduto}>Adicionar Produto</button>
+          <h1>Estoques</h1>
+          <button onClick={handleAddEstoque}>Adicionar Estoque</button>
           <button onClick={() => navigate('/')}>Voltar para Home</button>
         </ContentHeader>
 
         <Table>
           <thead>
             <tr>
-              <th>Nome do Produto</th>
-              <th>Descrição</th>
-              <th>Quantidade</th>
+              <th>Código do Produto</th>
+              <th>Quantidade em Estoque</th>
+              <th>Quantidade em Trânsito</th>
+              <th>Quantidade Disponível</th>
+              <th>Quantidade Reservada</th>
+              <th>Data de Validade</th>
+              <th>Data da Última Entrada</th>
+              <th>Giro do Produto</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
-            {produtos.map((produto) => (
-              <tr key={produto.id}>
-                <td>{produto.nome}</td>
-                <td>{produto.descricao}</td>
-                <td>{produto.quantidade}</td>
+            {estoques.map((estoque) => (
+              <tr key={estoque.produtoId}>
+                <td>{estoque.produtoId}</td>
+                <td>{estoque.qtEstoqueGerencial}</td>
+                <td>{estoque.qtTransito}</td>
+                <td>{estoque.qtDisponivel}</td>
+                <td>{estoque.qtReservada}</td>
+                <td>{estoque.dtValidade}</td>
+                <td>{estoque.dtUltEntrada}</td>
+                <td>{estoque.giroProduto}</td>
                 <td>
-                  <button className="edit-btn" onClick={() => handleEdit(produto)}>Editar</button>
-                  <button className="delete-btn" onClick={() => handleDelete(produto.id)}>Excluir</button>
+                  <button className="edit-btn" onClick={() => handleEdit(estoque)}>Editar</button>
+                  <button className="delete-btn" onClick={() => handleDelete(estoque.produtoId)}>Excluir</button>
                 </td>
               </tr>
             ))}
@@ -115,34 +144,84 @@ const Estoque: React.FC = () => {
           <Overlay>
             <Modal>
               <ModalContent>
-                <h2>{editando ? 'Editar Produto' : 'Adicionar Produto'}</h2>
+                <h2>{editando ? 'Editar Estoque' : 'Adicionar Estoque'}</h2>
                 <form onSubmit={handleSubmit}>
                   <div>
-                    <label>Nome:</label>
-                    <input
-                      type="text"
-                      name="nome"
-                      value={novoProduto.nome}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Descrição:</label>
-                    <input
-                      type="text"
-                      name="descricao"
-                      value={novoProduto.descricao}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Quantidade:</label>
+                    <label>Código do Produto:</label>
                     <input
                       type="number"
-                      name="quantidade"
-                      value={novoProduto.quantidade}
+                      name="produtoId"
+                      value={novoEstoque.produtoId}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Quantidade em Estoque:</label>
+                    <input
+                      type="number"
+                      name="qtEstoqueGerencial"
+                      value={novoEstoque.qtEstoqueGerencial}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Quantidade em Trânsito:</label>
+                    <input
+                      type="number"
+                      name="qtTransito"
+                      value={novoEstoque.qtTransito}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Quantidade Disponível:</label>
+                    <input
+                      type="number"
+                      name="qtDisponivel"
+                      value={novoEstoque.qtDisponivel}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Quantidade Reservada:</label>
+                    <input
+                      type="number"
+                      name="qtReservada"
+                      value={novoEstoque.qtReservada}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Data de Validade:</label>
+                    <input
+                      type="date"
+                      name="dtValidade"
+                      value={novoEstoque.dtValidade}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Data da Última Entrada:</label>
+                    <input
+                      type="date"
+                      name="dtUltEntrada"
+                      value={novoEstoque.dtUltEntrada}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Giro do Produto:</label>
+                    <input
+                      type="number"
+                      name="giroProduto"
+                      value={novoEstoque.giroProduto}
                       onChange={handleChange}
                       required
                     />
